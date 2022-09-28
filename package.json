@@ -1,0 +1,14 @@
+{
+  "name": "practica",
+  "version": "1.0.0",
+  "description": "proyecto del curso de fullstack",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andres Agudelo",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
+}

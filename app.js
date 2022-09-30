@@ -10,18 +10,23 @@ app.set("NameServer","ServidorClase")
 // Middlewares
 app.use(express.static("public"))
 app.use(morgan("dev"))
+app.use(express.json())
 
 
 //Reglas Enrutamiento
-app.get('/',(req,res)=>{
+app.get('/:id/:nombre',(req,res)=>{
 
-res.sendFile("./index.html",{root:__dirname})
+// res.sendFile("./index.html",{root:__dirname})
+res.send(req.params.id+req.params.nombre)
 
 })
 
 app.post('/',(req,res)=>{
 
-    res.json({"respuesta":200})
+
+    console.log(req.body)
+    res.send(TipoDeSaludo(req.body.codigo.id))
+
 })
 app.put('/',(req,res)=>{
 
@@ -35,3 +40,21 @@ app.listen(app.get("port"),()=>{
 
     console.log("Servidor Up en el puerto 3000")
 })
+
+
+function TipoDeSaludo(numero){
+
+    switch(numero){
+
+        case 1: return("Hola como estas")
+
+        break;
+
+        case 2: return ("Helloo")
+
+        case 3: return("bon jour")
+
+        default: return ("Saludo no encontrado")
+
+    }
+}

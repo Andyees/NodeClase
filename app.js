@@ -1,46 +1,37 @@
-const colors=require('colors')
-const os= require('os')
-const fs=require('fs')
-const math= require('./math') 
-// console.log(math.Matematica.add(2,2))
-// console.log("prueba".rainbow)
-// console.log(math.numerPi)
+const morgan=require("morgan")
+//Inicializamos aplicacon con express
+const express=require('express')
+const app=express()
 
-// console.log(os.networkInterfaces())
+//Asignamiento de propiedades a nuestra aplicacion
+app.set("port",3000)
+app.set("NameServer","ServidorClase")
 
-function leerArchivo(rutaFile,rutaFolder){
-
-    fs.access(rutaFolder,fs.constants.F_OK,(err)=>{
-
-        if(err){
-    
-            console.error(err)
-        }
-        else{
-            fs.readFile(rutaFile,"utf8",(err,data)=>{
-                if(err){
-    
-                    console.error("no se pudo leer archivo")
-                    console.error(err)
-                }
-                else{
-    
-                    console.log(data)
-                    //convertir a json
-                    // agregar un nuevo empelado al objeto
-                    //escribir ese json en el archivos datos Jsobn
-                }
-            
-            })
-        }
-    
-    
-    })
-}
+// Middlewares
+app.use(express.static("public"))
+app.use(morgan("dev"))
 
 
-leerArchivo("./texto.txt","./")
+//Reglas Enrutamiento
+app.get('/',(req,res)=>{
+
+res.sendFile("./index.html",{root:__dirname})
+
+})
+
+app.post('/',(req,res)=>{
+
+    res.json({"respuesta":200})
+})
+app.put('/',(req,res)=>{
+
+  res.sendStatus(500)
+
+})
 
 
+//poner a escuchar en nuestro localhost nuestra aplicacion
+app.listen(app.get("port"),()=>{
 
-
+    console.log("Servidor Up en el puerto 3000")
+})

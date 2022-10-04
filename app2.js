@@ -1,4 +1,7 @@
+const usuarios=ReadUsers()
+
 const morgan=require("morgan")
+
 //Inicializamos aplicacon con express
 const express=require('express')
 const app=express()
@@ -33,7 +36,24 @@ app.put('/',(req,res)=>{
   res.sendStatus(500)
 
 })
+app.post('/GetUser',(req,res)=>{
 
+let id=req.body.id
+res.send(getUser(usuarios,id)) 
+})
+
+app.post('/AddUser',(req,res)=>{
+//validar que el usuario que se va crear no exista
+// validar que la informacion del usuario este completa
+//Ingresar el usuario a la lista
+//escribir los datos de la lista de usuarios en el archivo
+})
+app.delete('DeleteUser/',(req,res)=>{
+//validar que el id del usuario exista (Si no existe notificar)
+// eliminar el usuario de la lista
+//escribir la lista de usuarios actualizada en el aechivo
+
+})
 
 
 
@@ -60,3 +80,16 @@ function TipoDeSaludo(numero){
 
     }
 }
+function getUser(ListUsuarios,id){
+
+    for (const x of ListUsuarios) {
+
+      if(x.id===id){
+        return x
+      }
+        
+    }
+    return {"Respuesta": "Usuario no encontrado"}
+
+}
+function ReadUsers(){}

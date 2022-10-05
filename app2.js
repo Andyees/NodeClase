@@ -1,4 +1,6 @@
-const usuarios=ReadUsers()
+const fs =require("fs")
+let usuarios={}
+ReadUsers("datos.json")
 
 const morgan=require("morgan")
 
@@ -43,6 +45,10 @@ res.send(getUser(usuarios,id))
 })
 
 app.post('/AddUser',(req,res)=>{
+
+    let user=req.body.User
+    res.send(addUser(user,usuarios))
+   // usuarios=ReadUsers()
 //validar que el usuario que se va crear no exista
 // validar que la informacion del usuario este completa
 //Ingresar el usuario a la lista
@@ -92,4 +98,68 @@ function getUser(ListUsuarios,id){
     return {"Respuesta": "Usuario no encontrado"}
 
 }
-function ReadUsers(){}
+ function ReadUsers(ruta){
+
+    fs.readFile(ruta,"utf8",(err,data)=>{
+        if(err){
+        
+            console.error("no se pudo leer archivo")
+         console.error(err)
+                    }
+        else{
+        
+        console.log(data)
+        let textJson=JSON.parse(data)
+        usuarios=textJson
+                       
+                        
+                        
+                    }
+                
+                })
+            }
+
+function addUser(user,listausuarios){
+
+    if(user.id===undefined || user.Name===undefined ||user.Apellido===undefined ||user.Age===undefined ||user.Cargo===undefined ){
+
+        return({"respuesta":"No se agrega el usuario porque no cumple la estructura completa de las propiedades"})
+    }
+    console.log(listausuarios)
+    for (const x of listausuarios) {
+        if(x.id===user.id){
+            return({"respuesta":"El usuario ya existe con ese id"})
+        }
+        
+
+    }
+
+
+   
+    listausuarios.push(user)
+    WriteUsers(listausuarios,"datos.json")
+
+      
+  
+
+
+}
+ 
+async function WriteUsers(data,ruta){
+    let texto =JSON.stringify(data)
+    await fs.writeFile(ruta,texto,(err)=>{
+
+        if(err){
+
+            console.error("No se pudo escrbir los datos en el archvivo por el siguiente error"+err)
+            return false
+        }
+
+        else{
+            console.log("Se escribio la informacion con exito")
+            return ("Se escribio la informacion con exito")
+
+        }
+    })
+}
+

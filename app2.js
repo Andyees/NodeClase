@@ -1,7 +1,8 @@
 const fs =require("fs")
+const { promisify } = require('util')
 let usuarios={}
 ReadUsers("datos.json")
-
+const writeFileAsync = promisify(fs.writeFile)
 const morgan=require("morgan")
 
 //Inicializamos aplicacon con express
@@ -9,6 +10,7 @@ const express=require('express')
 const app=express()
 
 //Asignamiento de propiedades a nuestra aplicacion
+app.set('view engine','ejs')
 app.set("port",3000)
 app.set("NameServer","ServidorClase")
 
@@ -25,7 +27,12 @@ app.get('/:id/:nombre',(req,res)=>{
 res.send(req.params.id+req.params.nombre)
 
 })
+app.get('/',(req,res)=>{
 
+
+    res.render('index.ejs',{saludo:"Hola probando el envio de datos"})
+
+})
 app.post('/',(req,res)=>{
 
 
@@ -44,17 +51,25 @@ let id=req.body.id
 res.send(getUser(usuarios,id)) 
 })
 
-app.post('/AddUser',(req,res)=>{
+app.post('/AddUser',async(req,res)=>{
 
     let user=req.body.User
-    res.send(addUser(user,usuarios))
+    
+    res.send( await addUser(user,usuarios))
    // usuarios=ReadUsers()
 //validar que el usuario que se va crear no exista
 // validar que la informacion del usuario este completa
 //Ingresar el usuario a la lista
 //escribir los datos de la lista de usuarios en el archivo
 })
-app.delete('DeleteUser/',(req,res)=>{
+app.delete('/DeleteUser',async(req,res)=>{
+    if(req.body.id===undefined){
+        res.send({Error:"No se envio la informacion del id a eliminar"})
+    }else{
+    let id=req.body.id
+    
+   res.send( await DeleteUser(id,usuarios))
+    }
 //validar que el id del usuario exista (Si no existe notificar)
 // eliminar el usuario de la lista
 //escribir la lista de usuarios actualizada en el aechivo
@@ -69,6 +84,9 @@ app.listen(app.get("port"),()=>{
     console.log("Servidor Up en el puerto 3000")
 })
 
+
+
+//Funciones
 
 function TipoDeSaludo(numero){
 
@@ -107,8 +125,7 @@ function getUser(ListUsuarios,id){
          console.error(err)
                     }
         else{
-        
-        console.log(data)
+       
         let textJson=JSON.parse(data)
         usuarios=textJson
                        
@@ -118,8 +135,33 @@ function getUser(ListUsuarios,id){
                 
                 })
             }
+async function DeleteUser(id,listausuarios){
+    let UserExiste=false
+    let indexUser
+  for (let i=0;i<listausuarios.length;i++) {
+    if(id===listausuarios[i].id){
+        UserExiste=true
+        indexUser=i
+        break
+    }
+  }
 
-function addUser(user,listausuarios){
+
+   if(UserExiste){
+    listausuarios.splice(indexUser,1) //remover User
+    let respuesta= await WriteUsers(listausuarios,"datos.json")
+    if( await respuesta.Respuesta!=undefined){
+        return{"Respuesta":"El usuario ha sido eliminado con exito"}
+
+    }
+    else{
+        return{"Error":"No se pudo actualizar el archivo"}
+    }
+   }}
+   
+            
+
+async function addUser(user,listausuarios){
 
     if(user.id===undefined || user.Name===undefined ||user.Apellido===undefined ||user.Age===undefined ||user.Cargo===undefined ){
 
@@ -137,7 +179,9 @@ function addUser(user,listausuarios){
 
    
     listausuarios.push(user)
-    WriteUsers(listausuarios,"datos.json")
+    let respuesta=await WriteUsers(listausuarios,"datos.json")
+
+    return await respuesta
 
       
   
@@ -147,19 +191,18 @@ function addUser(user,listausuarios){
  
 async function WriteUsers(data,ruta){
     let texto =JSON.stringify(data)
-    await fs.writeFile(ruta,texto,(err)=>{
+    let stateWrite=await writeFileAsync(ruta,texto)
+    console.log(stateWrite)
+    if(stateWrite){
 
-        if(err){
+        console.error("No se pudo escrbir los datos en el archvivo por el siguiente error"+err)
+        return ({Error:"No se pudo escrbir los datos en el archvivo"})
+    }
 
-            console.error("No se pudo escrbir los datos en el archvivo por el siguiente error"+err)
-            return false
-        }
+    else{
+        console.log("Se escribio la informacion con exito")
+        return ({Respuesta:"Se escribio la informacion con exito"})
 
-        else{
-            console.log("Se escribio la informacion con exito")
-            return ("Se escribio la informacion con exito")
-
-        }
-    })
+    }
 }
 

@@ -1,9 +1,23 @@
+const fs =require("fs")
 const morgan=require("morgan")
+const routes=require("./routes/routes")
+let StringConnectionCloud="mongodb+srv://aagudeloj:ClaseFullStack2022@cluster0.frkwosd.mongodb.net/?retryWrites=true&w=majority"
+let StringConnectionLocal="mongodb://localhost/Usuarios"
+const mongoose=require('mongoose')
+
+
+//Conectandonos a la base de datos
+mongoose.connect(StringConnectionLocal).then(()=>{
+    console.log("Base de datos Conectada Exitosamente")
+}).catch(error=> console.error(error)
+)
+
 //Inicializamos aplicacon con express
 const express=require('express')
 const app=express()
 
 //Asignamiento de propiedades a nuestra aplicacion
+app.set('view engine','ejs')
 app.set("port",3000)
 app.set("NameServer","ServidorClase")
 
@@ -11,28 +25,7 @@ app.set("NameServer","ServidorClase")
 app.use(express.static("public"))
 app.use(morgan("dev"))
 app.use(express.json())
-
-
-//Reglas Enrutamiento
-app.get('/:id/:nombre',(req,res)=>{
-
-// res.sendFile("./index.html",{root:__dirname})
-res.send(req.params.id+req.params.nombre)
-
-})
-
-app.post('/',(req,res)=>{
-
-
-    console.log(req.body)
-    res.send(TipoDeSaludo(req.body.codigo.id))
-
-})
-app.put('/',(req,res)=>{
-
-  res.sendStatus(500)
-
-})
+app.use('/api',routes)
 
 
 
@@ -42,21 +35,3 @@ app.listen(app.get("port"),()=>{
 
     console.log("Servidor Up en el puerto 3000")
 })
-
-
-function TipoDeSaludo(numero){
-
-    switch(numero){
-
-        case 1: return("Hola como estas")
-
-        break;
-
-        case 2: return ("Helloo")
-
-        case 3: return("bon jour")
-
-        default: return ("Saludo no encontrado")
-
-    }
-}

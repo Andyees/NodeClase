@@ -1,13 +1,13 @@
 const fs =require("fs")
 const morgan=require("morgan")
 const routes=require("./routes/routes")
-let StringConnectionCloud="mongodb+srv://aagudeloj:ClaseFullStack2022@cluster0.frkwosd.mongodb.net/?retryWrites=true&w=majority"
+let StringConnectionCloud="mongodb+srv://aagudeloj:ClaseFullStack2022@cluster0.frkwosd.mongodb.net/ClaseFullstack?retryWrites=true&w=majority"
 let StringConnectionLocal="mongodb://localhost/Usuarios"
 const mongoose=require('mongoose')
 
 
 //Conectandonos a la base de datos
-mongoose.connect(StringConnectionLocal).then(()=>{
+mongoose.connect(StringConnectionCloud).then(()=>{
     console.log("Base de datos Conectada Exitosamente")
 }).catch(error=> console.error(error)
 )

@@ -1,0 +1,38 @@
+<%- include("header")  -%> 
+
+<div class="container col-md-6 ">
+<div class="card-body">
+
+    <form action="/app/ActualizarUsuario" method="POST">
+
+            <input type="hidden"  value="<%= Usuario._id %>"  name="_id" id="INombre" class="form-control form-control-lg" type="text" placeholder="Ingrese su Nombre" readonly >    
+       
+            <input value="<%= Usuario.Name %>"  name="Name" id="INombre" class="form-control form-control-lg" type="text" placeholder="Ingrese su Nombre" >    
+
+  <br>
+            <input value="<%= Usuario.LastName %>" id="IApellido" name="LastName" class="form-control form-control-lg" type="text" placeholder="Ingrese su Apellido" >    
+    
+  
+    <br>
+            <input value="<%= Usuario.Cedula %>" id="ICedula" name="Cedula" class="form-control form-control-lg" type="number" placeholder="Ingrese su cedula" >    
+    
+<br>
+            
+
+            <button class="btn btn-success" type="submit">Actualizar</button>
+       
+
+    </form>
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<%- include("footer")  -%> 

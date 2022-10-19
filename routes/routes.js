@@ -36,10 +36,14 @@ ReadUsers('./datos.json')
     router.post("/AgregarUsuario", (req,res)=>{
     
         const Usuario=new user(req.body)
+        console.log(req.body)
         Usuario.save().then((data)=>{
             
             console.log("El usuario fue creado exitosamente en la BD") 
-            res.send({"status":"El usuario fue creado"}); console.log(data) })
+            res.redirect("/app")
+            res.send({"status":"El usuario fue creado"}); console.log(data)
+           
+        })
                         .catch((err)=>{console.error(err); res.send({"status":"El usuario no pudo ser creado"})})
         
 
@@ -60,35 +64,47 @@ ReadUsers('./datos.json')
  
     })
 
-    router.delete("/EliminarUsuario",(req,res)=>{
+    router.get("/EliminarUsuario/:cedula",(req,res)=>{
 
-        const CedulaUser=req.body.cedula
+        const CedulaUser=req.params.cedula
+        console.log(req.params)
         user.deleteOne({"Cedula":CedulaUser}).then((resp)=>{
             console.log(resp.deletedCount)
-            if(resp.deletedCount==0){
+            if(resp.deletedCount===0){
                 res.send({status:"Usuario no encontrado"})
             }
             else{
+                res.redirect("/app")
             res.send({Status:"Usuario Eliminado Con exito"})}}).catch((err)=>res.send({Status:"No fue posible eliminar el usuario",error:err}))
     })
 
-    router.put("/ActualizarUsuario",(req,res)=>{
-    user.updateOne({"Cedula":req.body.Cedula},req.body.data)
+    router.post("/ActualizarUsuario",(req,res)=>{
+    console.log(req.body._id)
+    user.updateOne({"_id":req.body._id},req.body)
     .then((resp)=>{
-        if(resp.modifiedCount==0){
+        if(resp.modifiedCount===0){
             res.send({status:"Usuario no encontrado"})
         }
         else{
+        console.log("Usuario Actualizado con exito")
+        res.redirect("/app")    
         res.send({status:"Usuario Actualizado con exito"})}; console.log(resp)})
     .catch((err)=>{res.send({status:"No se pudo actualizar",error:err})})
         
     })
+    router.get("/ActualizarUser/:cedula",async(req,res)=>{
 
-    router.get('/users',async(req,res)=>{
+       const cedula=req.params.cedula
+       const usuario= await user.findOne({"Cedula":cedula})
+       res.render("editar",{Usuario:usuario})
+            
+        })
+
+    router.get('/',async(req,res)=>{
     
     const users= await user.find()
     await console.log( users)
-   res.render("users",{Usuarios:users})
+  | res.render("users",{Usuarios:users})
 
     
       })

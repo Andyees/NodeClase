@@ -25,7 +25,9 @@ app.set("NameServer","ServidorClase")
 app.use(express.static("public"))
 app.use(morgan("dev"))
 app.use(express.json())
-app.use('/api',routes)
+app.use(express.urlencoded({extended:false}))
+app.use('/app',routes)
+
 
 
 
